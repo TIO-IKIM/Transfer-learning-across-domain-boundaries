@@ -1,0 +1,39 @@
+# global options
+seed: 2
+num_workers: 8
+batch_size: 4096
+epochs: 100
+prefetch_factor: 1
+device: "cuda"
+verbose: True
+#folds: 1 # Setting folds to a value different from null will do n-fold cross-validation
+
+# dataset options
+opmode: "live_cache"
+data_format: ".JPEG"
+normalizer: "naive" # naive, 01_clipped_CT, imagenet, windowed
+# normalizer_window: [null, null, 0, 1]
+shape_desired: [256, 256]
+tf_device: "gpu"
+no_augs: False # Disable augmentations for debugging purposes?
+noise_injection: [1.0e-2, 1.0]
+
+# model options
+model_name: "resnet50"
+syncbn: True
+model_path: "/Projects/DATL/logs_and_checkpoints/pretraining/ct_full/encoder_pretrained.tar"
+
+# task (does projection head, decoder, dataset, etc, in hardcoded fashion)
+task: "ImageNet-1k"
+
+# loss options
+optimizer: "LARS" # Adam, AdamW, LARS (experimental)
+lr: 4.8 # learning rate 
+weight_decay: 1.0e-6 # (LARS excepts BN and Bias from weight decay)
+scheduler: decay
+decay_per_epoch: 0.97
+scheduling_interval: "epoch" # step or epoch as scheduling steps
+
+# logging and checkpointing options
+name: "E3/PT_SimCLR_RF_FT_I1k_noise2_f2" # name of the current run, this is also where things get saved
+log_losses: True # log losses

@@ -1,0 +1,6 @@
++ More documentation
++ Add layout for dataset structures
++ Link existing pretrained/finetuned models for download from UME Cloud
++ Link the original locations where we downloaded the public datasets from
++ Add single-function access to pretrained models (which builds the model and loads the state dict, so users don't have to jump through hoops)
++ Pretrain more modern models (ResNet-152x4, ViT) for use in REMEDIS

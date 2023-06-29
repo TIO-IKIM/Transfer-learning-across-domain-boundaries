@@ -1,0 +1,19 @@
+SimCLR -> https://github.com/Spijkervet/SimCLR/ (MIT license), https://arxiv.org/abs/2002.05709
+LARS -> https://arxiv.org/abs/1708.03888
+ImageNet-1k -> DOI: 10.1109/CVPR.2009.5206848
+BCA-Onco -> DOI: 10.1007/s00330-020-07147-3
+LiTS -> DOI: 10.1016/j.media.2022.102
+BraTS -> DOI: 10.59275/j.melba.2022-354b
+ChestX-ray8 -> DOI: 10.1109/CVPR.2017.369
+ResNet -> https://arxiv.org/abs/1512.03385
+UNet -> https://arxiv.org/abs/1505.04597
+UNet from Backbone -> https://github.com/mkisantal/backboned-unet/ (MIT license)
+DiceLoss in PyTorch -> https://github.com/hubutui/DiceLoss-PyTorch (no license)
+DiceLoss 2 -> https://github.com/hubutui/DiceLoss-PyTorch/blob/master/loss.py (no license)
+CKA Similarity -> https://arxiv.org/pdf/1905.00414.pdf
+CKA Torch Git -> https://github.com/yuanli2333/CKA-Centered-Kernel-Alignment/ (MIT license)
+CudaCKA Git -> https://github.com/jayroxis/CKA-similarity (no license)
+Covid-X-Ray -> See also Readme, https://ieeexplore.ieee.org/document/9144185 , https://www.sciencedirect.com/science/article/pii/S001048252100113X?via%3Dihub
+Albumentations -> https://arxiv.org/abs/1809.06839
+
+We thank the CCCE for funding this project via the KITE initiative, and the EU for funding the CCCE via EU-REACT.

@@ -1,0 +1,2 @@
+auc_avg_overall,dice_avg_overall,iou_avg_overall,precision_avg_overall,recall_avg_overall
+0.746575372106751,0.2367117443359986,0.14148935006130448,0.2744322623848798,0.35062914284856816

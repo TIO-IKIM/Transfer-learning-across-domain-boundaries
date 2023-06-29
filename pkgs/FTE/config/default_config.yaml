@@ -1,0 +1,44 @@
+# global options
+seed: 42 
+num_workers: 8
+batch_size: 4096
+epochs: 100
+prefetch_factor: 1
+device: "cuda" # 'cuda' or 'cpu'
+verbose: True
+#folds: 1 # Setting folds to a value different from null will do n-fold cross-validation, not yet implemented
+
+# debug options
+debug: False
+short_training: False
+test_nan_inf: True
+
+# dataset options
+opmode: "live_cache"
+data_format: ".JPEG"
+normalizer: "naive" # naive, 01_clipped_CT, imagenet, windowed
+# normalizer_window: [null, null, 0, 1]
+shape_desired: [256, 256]
+tf_device: "gpu"
+no_augs: False # Disable all augmentations
+noise_injection: null # If not null, should be [sigma, probability] for injection of Gaussian Noise into data at train time.
+frozen_encoder: False # Freezes entire encoder, except the new head.
+
+# model options
+model_name: "resnet50"
+syncbn: True # If the ResNet was trained using SyncBN like in SimCLR, we continue using SyncBN
+model_path: "/Projects/DATL/logs_and_checkpoints/pretraining/sancheck_1k100/encoder_pretrained.tar"
+
+# task (does projection head, decoder, dataset, etc, in hardcoded fashion)
+task: "ImageNet-1k" # Must be one of 'ImageNet-1k', 'ImageNet-21k', 'CTBR', 'CTBR-12M', 'LiTS', 'PASCAL-VOC', 'CXR-C' or 'CXR-S'
+
+# loss options
+optimizer: "LARS" # Adam, AdamW, LARS (experimental)
+lr: 3.0e-4 # learning rate (LARS uses its own lr scaling rule based on batch size and disregards this entry)
+weight_decay: 1.0e-4 # (LARS excepts BN and Bias from weight decay)
+scheduler: "decay" # decay, decaying_cosine, cosine
+scheduling_interval: "epoch" # step or epoch as scheduling steps
+
+# logging and checkpointing options
+name: "testrange" # name of the current run, this is also where things get saved
+log_losses: True # log losses

@@ -1,0 +1,20 @@
+{
+    "python.defaultInterpreterPath": "/home/freddy/miniconda3/envs/MEDDL_3",
+    "python.autoComplete.extraPaths": ["/Projects/DATL"],
+    "python.analysis.extraPaths": ["/Projects/DATL"],
+    "files.watcherExclude": {
+        "datasets": true,
+        "/Projects/DATL/datasets": true,
+        "logs_and_checkpoints": true,
+        "/Projects/DATL/logs_and_checkpoints": true
+    },
+    "files.exclude": {
+        "datasets": true,
+        "/Projects/DATL/datasets": true
+    },
+    "search.followSymlinks": false,
+    "search.exclude": {
+        "datasets": true,
+        "/Projects/DATL/datasets": true
+    }
+}

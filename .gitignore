@@ -7,7 +7,7 @@
 ./.git/
 ./.vscode/
 pyrightconfig.json
-./datasets/
+datasets
 !.gitignore
 unsorted/*
 !unsorted/eval.ipynb
@@ -16,3 +16,4 @@ unsorted/*
 **/crash.log
 **/tr/**
 **/old/**
+old_rq.yaml

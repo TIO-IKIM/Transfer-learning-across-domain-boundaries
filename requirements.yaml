@@ -1,4 +1,4 @@
-name: MEDDL_3
+name: TLADB
 channels:
   - pytorch
   - dglteam
@@ -39,13 +39,6 @@ dependencies:
   - click=8.0.4=py38h06a4308_0
   - cloudpickle=2.1.0=pyhd8ed1ab_0
   - cryptography=3.3.1=py38h2b97feb_0
-  - cuda-cudart=11.7.99=0
-  - cuda-cupti=11.7.101=0
-  - cuda-libraries=11.7.1=0
-  - cuda-nvrtc=11.7.99=0
-  - cuda-nvtx=11.7.91=0
-  - cuda-runtime=11.7.1=0
-  - cudatoolkit=11.3.1=h2bc3f7f_2
   - cycler=0.10.0=py_2
   - cytoolz=0.11.0=py38h7b6447c_0
   - dask-core=2022.7.1=pyhd8ed1ab_0

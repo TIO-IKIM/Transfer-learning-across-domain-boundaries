@@ -16,4 +16,4 @@ unsorted/*
 **/crash.log
 **/tr/**
 **/old/**
-old_rq.yaml
+logs_and_checkpoints/pretraining/testrange

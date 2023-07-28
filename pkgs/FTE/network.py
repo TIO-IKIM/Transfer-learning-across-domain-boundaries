@@ -32,7 +32,11 @@ class ClassificationNetwork(nn.Module):
     def __init__(self, enc_name: str, enc_weights, classes: int, loss_criterion: torch.nn.Module, tf: Callable = None, frozen_encoder: bool = False):
         super(ClassificationNetwork, self).__init__()
 
-        self.encoder = get_resnet(enc_name, pretrained = False)
+        if "resnet" in enc_name:
+            self.encoder = get_resnet(enc_name, pretrained = False)
+        else:
+            raise NotImplementedError # TODO: Add a pretrained ViT
+        
         self.encoder.load_state_dict(torch.load(enc_weights, map_location = torch.device("cpu")), strict = False)
         self.classes = classes
         self.n_features = self.encoder.fc.in_features
@@ -46,13 +50,6 @@ class ClassificationNetwork(nn.Module):
                 param.requires_grad = False
 
         # Get new head
-        """
-        self.head = nn.Sequential(
-            nn.Linear(self.n_features, self.n_features, bias=False),
-            nn.ReLU(),
-            nn.Linear(self.n_features, self.classes, bias=False)
-        )
-        """
         self.head = nn.Linear(self.n_features, self.classes, bias = False)
 
     def forward(self, data: torch.Tensor, target: torch.Tensor):

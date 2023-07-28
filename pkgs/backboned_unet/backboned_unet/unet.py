@@ -139,11 +139,16 @@ class Unet(nn.Module):
 
         self.backbone_name = backbone_name
         if custom_weights is None:
-            self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained=pretrained)
-        else:
-            # FreddyJ: modify the backbone to load our pretrained model
-            self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained=False)
+            self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained = pretrained)
+        elif isinstance(custom_weights, str):
+            # FreddyJ: if custom_weights is a string, modify the backbone to load our pretrained model from disk
+            self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained = False)
             self.backbone.load_state_dict(torch.load(custom_weights, map_location = torch.device("cpu")), strict = False)
+        else:
+            # FreddyJ: else assume custom_weights is already a loaded state_dict and simply use it
+            self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained = False)
+            self.backbone.load_state_dict(custom_weights, strict = False)
+
         
         shortcut_chs, bb_out_chs = self.infer_skip_channels()
         if shortcut_features != 'default':

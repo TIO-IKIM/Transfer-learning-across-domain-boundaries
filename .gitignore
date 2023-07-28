@@ -17,3 +17,4 @@ unsorted/*
 **/tr/**
 **/old/**
 logs_and_checkpoints/pretraining/testrange
+logs_and_checkpoints/seafile-ignore.txt

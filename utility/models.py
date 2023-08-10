@@ -144,11 +144,11 @@ def get_model(
         raise NotImplementedError(f"Model {model_name} not implemented. Model name must be one of {valid_models}.")
 
 if __name__ == "__main__":
-    #pt_resnet = get_model("resnet50", "./logs_and_checkpoints/pretraining/sancheck_1k100/encoder_pretrained.tar", 1000)
-    #ft_resnet = get_model("resnet50", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_I1k_FT_I1k/finetuned_model.tar", 1000)
-    #pt_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/pretraining/sancheck_ct100/encoder_pretrained.tar", 3)
+    pt_resnet = get_model("resnet50", "./logs_and_checkpoints/pretraining/sancheck_1k100/encoder_pretrained.tar", 1000)
+    ft_resnet = get_model("resnet50", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_I1k_FT_I1k/finetuned_model.tar", 1000)
+    pt_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/pretraining/sancheck_ct100/encoder_pretrained.tar", 3)
     ft_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_R_FT_LiTS/finetuned_model.tar", 3)
-    #print(pt_resnet)
-    #print(ft_resnet)
-    #print(pt_unet)
+    print(pt_resnet)
+    print(ft_resnet)
+    print(pt_unet)
     print(ft_unet)

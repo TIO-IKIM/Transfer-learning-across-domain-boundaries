@@ -147,7 +147,7 @@ class Unet(nn.Module):
         else:
             # FreddyJ: else assume custom_weights is already a loaded state_dict and simply use it
             self.backbone, self.shortcut_features, self.bb_out_name = get_backbone(backbone_name, pretrained = False)
-            self.backbone.load_state_dict(custom_weights, strict = False)
+            self.backbone.load_state_dict(custom_weights, strict = False) # if something feels off, set strict=True and check if everything is being loaded properly
 
         
         shortcut_chs, bb_out_chs = self.infer_skip_channels()

@@ -21,7 +21,7 @@ Config file options should be mostly self-explanatory, although I did append som
 Note that while most of my config files have a w_m option specified, it is always null and no longer connects to anything under the hood.
 
 The package also comes with a QueueManager.py file, which can be run and will execute any jobs in the Jobs.csv file. Jobs are .csv-file lines and consist of the command to run and "open" or "completed" as their status. Do not edit the **Jobs.csv** file while the QueueManager is running - this will not cause any issues, but it will delete your changes, because the QueueManager will write the current state of the jobs back into the file on exit. Also, be careful what you put into the **Jobs.csv** file - the QueueManager will run any valid bash command sequence.
-4) The results for any runs (any relevant train, val and test metric, as well as network weights) are saved in logs_and_checkpoints. Both our pretrained and finetuned model weights can be downloaded from [TODO: Link].
+4) The results for any runs (any relevant train, val and test metric, as well as network weights) are saved in logs_and_checkpoints. Both our pretrained and finetuned model weights can be downloaded from https://cloud.uk-essen.de/d/86d2be31e9b84d21bd5c/.
 
 If you just want to use the pretrained models for something, do ```from utility.models import get_model``` and you're good to go.
 

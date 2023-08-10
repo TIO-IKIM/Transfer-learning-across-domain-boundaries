@@ -73,18 +73,23 @@ class Segmenter(nn.Module):
 
         # load state dict
         state_dict = torch.load(enc_weights, map_location = torch.device("cpu"))
-        # change the keys in the state dict so we can just use the Unet class we already have
-        # (finetuned models have the resnet living in unet.backbone)
+        
+        # if we want a finetuned model, build as normal, load entire state_dict at once
         if "_FT_" in enc_weights:
-            state_dict = {key.replace("unet.backbone.", "", 1): value 
-                          for key, value in state_dict.items()}
+            # so strict=True loading doesn't break
+            del(state_dict["loss_criterion.XE.weight"])
+            # build unet
             self.unet = Unet(
             backbone_name = backbone_name,
             classes = classes,
-            custom_weights = state_dict,
+            custom_weights = None,
             encoder_freeze = frozen_encoder
             )
-        # else load the state_dict as we normally would, by handing over the location of the weights
+            # use state dict
+            self.load_state_dict(state_dict)
+            for (name1, _), (name2, _2) in zip(self.unet.named_parameters(), state_dict.items()):
+                print(name1, name2)
+        # else load the state_dict as we would during finetuning, by handing the weights at unet construction
         else:
             self.unet = Unet(
             backbone_name = backbone_name,
@@ -141,11 +146,11 @@ def get_model(
         raise NotImplementedError(f"Model {model_name} not implemented. Model name must be one of {valid_models}.")
 
 if __name__ == "__main__":
-    pt_resnet = get_model("resnet50", "./logs_and_checkpoints/pretraining/sancheck_1k100/encoder_pretrained.tar", 1000)
-    ft_resnet = get_model("resnet50", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_I1k_FT_I1k/finetuned_model.tar", 1000)
-    pt_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/pretraining/sancheck_ct100/encoder_pretrained.tar", 3)
+    #pt_resnet = get_model("resnet50", "./logs_and_checkpoints/pretraining/sancheck_1k100/encoder_pretrained.tar", 1000)
+    #ft_resnet = get_model("resnet50", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_I1k_FT_I1k/finetuned_model.tar", 1000)
+    #pt_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/pretraining/sancheck_ct100/encoder_pretrained.tar", 3)
     ft_unet = get_model("unet_resnet50_backbone", "./logs_and_checkpoints/finetuning/E1/PT_SimCLR_R_FT_LiTS/finetuned_model.tar", 3)
-    print(pt_resnet)
-    print(ft_resnet)
-    print(pt_unet)
+    #print(pt_resnet)
+    #print(ft_resnet)
+    #print(pt_unet)
     print(ft_unet)

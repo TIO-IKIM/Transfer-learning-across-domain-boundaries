@@ -87,8 +87,6 @@ class Segmenter(nn.Module):
             )
             # use state dict
             self.load_state_dict(state_dict)
-            for (name1, _), (name2, _2) in zip(self.unet.named_parameters(), state_dict.items()):
-                print(name1, name2)
         # else load the state_dict as we would during finetuning, by handing the weights at unet construction
         else:
             self.unet = Unet(

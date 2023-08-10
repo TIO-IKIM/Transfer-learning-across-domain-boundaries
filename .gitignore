@@ -10,7 +10,6 @@ pyrightconfig.json
 datasets
 !.gitignore
 unsorted/*
-!unsorted/eval.ipynb
 !unsorted/DatasetComplexityLB.py
 !unsorted/DatasetComplexityUB.py
 **/crash.log

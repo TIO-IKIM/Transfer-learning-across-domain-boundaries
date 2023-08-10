@@ -1,4 +1,3 @@
 + More documentation
 + Add layout for dataset structures
-+ Link the original locations where we downloaded the public datasets from
 + Pretrain more modern models (ResNet-152x4, ViT) for potential use in REMEDIS

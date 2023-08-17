@@ -3,7 +3,11 @@
 **/*.tar.gz
 **/*.pyc
 **/*.csv
+**/*.ipynb
 !Jobs.csv
+!paper_eval/paper_eval_losscurves.ipynb
+!paper_eval/paper_eval_results.ipynb
+!pkgs/CKA/paper_eval_featsim.ipynb
 ./.git/
 ./.vscode/
 pyrightconfig.json

@@ -119,11 +119,11 @@ class RicianNoise(ImageOnlyTransform):
     def get_transform_init_args_names(self):
         return ("var_limit", "per_channel", "mean")
 
-def ImageNet_augs(noise_injection = None):
+def ImageNet_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = torchvision.transforms.Compose([
-    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop((256, 256), antialias = False)], 0.2),
+    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop(crop_size, antialias = False)], 0.2),
     torchvision.transforms.RandomHorizontalFlip(p = 0.2),
     #torchvision.transforms.RandomVerticalFlip(p = 0.2),
     torchvision.transforms.RandomApply([torchvision.transforms.ColorJitter(0.1, 0.1, 0.1, 0.2)], p = 0.2),
@@ -140,11 +140,11 @@ def ImageNet_augs(noise_injection = None):
 
     return cpu_augs, gpu_augs
 
-def CTBR_augs(noise_injection = None):
+def CTBR_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = torchvision.transforms.Compose([
-    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop((256, 256), antialias = False)], 0.2),
+    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop(crop_size, antialias = False)], 0.2),
     torchvision.transforms.RandomHorizontalFlip(p = 0.2),
     #torchvision.transforms.RandomVerticalFlip(p = 0.2),
     torchvision.transforms.RandomApply([torchvision.transforms.ColorJitter(0.1, 0.1, 0.1, 0.2)], p = 0.2),
@@ -161,11 +161,11 @@ def CTBR_augs(noise_injection = None):
 
     return cpu_augs, gpu_augs
 
-def LiTS_augs(noise_injection = None):
+def LiTS_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = albumentations.Compose([
-        albumentations.RandomResizedCrop(height = 256, width = 256, p = 0.2),
+        albumentations.RandomResizedCrop(height = crop_size[0], width = crop_size[1], p = 0.2),
         albumentations.HorizontalFlip(p = 0.2),
         #albumentations.VerticalFlip(p = 0.2),
         albumentations.ColorJitter(0.1, 0.1, 0.1, 0.2, p = 0.2),
@@ -182,11 +182,11 @@ def LiTS_augs(noise_injection = None):
 
     return cpu_augs, gpu_augs
 
-def BraTS_augs(noise_injection = None):
+def BraTS_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = albumentations.Compose([
-        albumentations.RandomResizedCrop(height = 256, width = 256, p = 0.2),
+        albumentations.RandomResizedCrop(height = crop_size[0], width = crop_size[1], p = 0.2),
         albumentations.HorizontalFlip(p = 0.2),
         #albumentations.VerticalFlip(p = 0.2),
         #albumentations.ColorJitter(0.1, 0.1, 0.1, 0.2, p = 0.2),
@@ -204,11 +204,11 @@ def BraTS_augs(noise_injection = None):
     return cpu_augs, gpu_augs
 
 """
-def PASCAL_VOC_augs(noise_injection = None):
+def PASCAL_VOC_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = albumentations.Compose([
-        albumentations.RandomResizedCrop(height = 256, width = 256, p = 0.2, interpolation = cv2.INTER_NEAREST),
+        albumentations.RandomResizedCrop(height = crop_size[0], width = crop_size[1], p = 0.2, interpolation = cv2.INTER_NEAREST),
         albumentations.HorizontalFlip(p = 0.2),
         #albumentations.VerticalFlip(p = 0.2),
         albumentations.ColorJitter(0.1, 0.1, 0.1, 0.2, p = 0.2),
@@ -226,11 +226,11 @@ def PASCAL_VOC_augs(noise_injection = None):
     return cpu_augs, gpu_augs
 """
 
-def CX8_augs(noise_injection = None):
+def CX8_augs(crop_size = (256, 256), noise_injection = None):
 
     cpu_augs = None
     gpu_augs = torchvision.transforms.Compose([
-    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop((256, 256), antialias = False)], 0.2),
+    torchvision.transforms.RandomApply([torchvision.transforms.RandomResizedCrop(crop_size, antialias = False)], 0.2),
     torchvision.transforms.RandomHorizontalFlip(p = 0.2),
     #torchvision.transforms.RandomVerticalFlip(p = 0.2),
     torchvision.transforms.RandomApply([torchvision.transforms.ColorJitter(0.1, 0.1, 0.1, 0.2)], p = 0.2),

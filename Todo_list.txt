@@ -1,3 +1,4 @@
 + More documentation
 + Add layout for dataset structures
 + Pretrain more modern models (ResNet-152x4, ViT) for potential use in REMEDIS
++ IxR Mix runs

@@ -23,6 +23,7 @@ from torch.utils.tensorboard import SummaryWriter
 # SimCLR
 from simclr import SimCLR
 from simclr.modules import NT_Xent, get_resnet
+#from simclr.modules.vit import get_vit
 from simclr.modules.transformations import TransformsSimCLR
 from simclr.modules.sync_batchnorm import convert_model
 
@@ -56,13 +57,15 @@ def train(
             tf = train_loader.dataset.apply_gpu_transforms
             
         #assert (x_i.is_cuda is True and x_j.is_cuda is True)
-        with tc.amp.autocast(enabled=True):
+        with tc.amp.autocast(enabled = True):
             if args.loss_device == "gpu":
                 losses = model(x, tf = tf, device = args.device)
+                print(losses)
                 loss = torch.mean(losses)
             elif args.loss_device == "cpu":
                 z_i, z_j = model(x, tf = tf, device = args.device)
                 loss = criterion(z_i, z_j)
+                print(loss)
             else:
                 ValueError("loss_device must be cpu or gpu.")
         if scaler is not None:
@@ -71,6 +74,7 @@ def train(
             scaler.update()
         else:
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 128)
             optimizer.step()
 
         if stepwise_scheduler is not None:
@@ -92,7 +96,7 @@ def train(
             uu.csv_logger(args.save_path+"/train.log", info, first = first, overwrite = first)
 
         if not args.low_verbosity and args.nr == 0 and step % max(1, ltl // 10) == 0:
-            print(f"Epoch [{epoch+1}/{args.epochs}], Step [{step+1}/{ltl}], Loss: {loss.item()}")#, Current LR: {clr}")
+            print(f"Epoch [{epoch+1}/{args.epochs}], Step [{step+1}/{ltl}], Loss: {loss.item()}, Current LR: {clr}")
 
         loss_epoch += loss.item()
 
@@ -168,39 +172,56 @@ def main(gpu: torch.DeviceObjType, args: object):
         pin_memory = (False if args.opmode == "live_cache" else True),
         persistent_workers = (False if args.opmode == "live_cache" else True))
 
-    # initialize ResNet
-    encoder = get_resnet(args.resnet, pretrained=False)
-    n_features = encoder.fc.in_features  # get dimensions of fc layer
+    # initialize ResNet (or other network)
+    if not "encoder_network" in vars(args):
+        args.encoder_network = args.resnet
+    if "resnet" in args.encoder_network:
+        encoder = get_resnet(args.encoder_network, pretrained=False)
+        n_features = encoder.fc.in_features  # get dimensions of fc layer
+        #print(encoder.fc.in_features, encoder.fc.out_features)
+    #elif "vit" in args.encoder_network: # FIXME
+        #encoder = get_vit(args.encoder_network, pretrained=False)
+        #n_features = encoder.head.out_features
+        #n_features = encoder.heads.head.in_features  # get dimensions of heads (fc) layer
+        #print(encoder.classifier, encoder.classifier[3])
+        #n_features = encoder.classifier[3].out_features
+        #n_features = encoder.classifier[2].out_features #####
+    else:
+        raise NotImplementedError
 
     # initialize model
     if args.dataparallel:
         args.gpus_dp = tc.device_count() # hacked together to properly use all gpus when only DataParallel is true
     model = SimCLR(encoder, args, n_features)
     if args.reload:
-        model_fp = os.path.join(args.save_path, "checkpoint_{}.tar".format(args.checkpoint_epoch)) 
+        model_fp = os.path.join(args.save_path, "checkpoint_{}.tar".format(args.epoch_num)) 
         model.load_state_dict(torch.load(model_fp, map_location=args.device.type))
-        args.start_epoch = args.checkpoint_epoch
+        args.start_epoch = args.epoch_num
     #model = model.to(args.device)
 
     # optimizer / loss
     optimizer, scheduler, stepwise_scheduler = load_optimizer(args, model, len_of_dataset=len(train_dataset))
     if args.loss_device == "cpu":
-        criterion = NT_Xent(args.batch_size, args.temperature, args.gpus_dp) # Will only be used if args.loss_device is not "gpu"
+        criterion = NT_Xent(int(args.batch_size/args.gpus_dp), args.temperature, args.gpus_dp) # Will only be used if args.loss_device is not "gpu"
     else:
         criterion = None
 
     # DDP / DP
     if args.dataparallel:
+        #if "resnet" in args.encoder_network: # only resnets need bns exchanged - vits have only layernorms
         model = convert_model(model)
         model = DataParallel(model)
         print("DataParallel active")
     else:
         if args.nodes > 1:
+            #if "resnet" in args.encoder_network: # only resnets need bns exchanged - vits have only layernorms
             model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
             model = DDP(model, device_ids=[gpu])
 
     model = model.to(args.device)
+    #if "resnet" in args.encoder_network:
     scaler = tc.amp.GradScaler(enabled = True)
+    #elif "vit" in args.encoder_network:
     #scaler = None
 
     #if args.nr == 0:
@@ -228,12 +249,14 @@ def main(gpu: torch.DeviceObjType, args: object):
 
             if args.nr == 0 and epoch % args.enc_save_frequency == 0:
                 save_encoder(args, model, epoch)
-                #save_model(args, model)
+
+            if args.nr == 0 and hasattr(args, "model_save_frequency") and epoch % args.model_save_frequency == 0:
+                save_model(args, model)
 
             if args.nr == 0:
                 print(f"Epoch Summary [{epoch+1}/{args.epochs}]\t Avg Loss: {epoch_loss}")#\t lr: {round(lr, 5)}")
 
-            if (epoch == 0 or (args.reload is True and epoch == args.checkpoint_epoch)) and args.opmode == "live_cache":
+            if (epoch == 0 or (args.reload is True and epoch == args.epoch_num)) and args.opmode == "live_cache":
                 train_loader = torch.utils.data.DataLoader(
                     dataset = train_dataset, 
                     batch_size = args.batch_size,

@@ -1,4 +1,4 @@
-import torchvision
+import torch, torchvision
 
 
 class TransformsSimCLR:
@@ -38,5 +38,9 @@ class TransformsSimCLR:
 
     def __call__(self, x):
         #return x, x
+        #if torch.any(torch.isnan(x)).item() == True or torch.any(torch.isinf(x)).item() == True:
+        #    print("NAN/INF")
+        #else:
+        #    print("nada")
         return self.train_transform(x), self.train_transform(x)
 

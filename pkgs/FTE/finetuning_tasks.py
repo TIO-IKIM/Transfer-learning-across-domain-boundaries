@@ -54,7 +54,10 @@ def augs_from_task(args: object):
     if args.task not in list(augs.keys()):
         raise NotImplementedError
     else:
-        cpu_augs, gpu_augs = augs[args.task](noise_injection = vars(args).get("noise_injection", None))
+        cpu_augs, gpu_augs = augs[args.task](
+            crop_size = tuple(vars(args).get("shape_desired", (256, 256))),
+            noise_injection = vars(args).get("noise_injection", None)
+            )
     if args.no_augs is True:
         return None, None
     else:

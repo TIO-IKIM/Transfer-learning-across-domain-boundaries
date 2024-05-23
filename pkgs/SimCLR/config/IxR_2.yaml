@@ -1,0 +1,53 @@
+# distributed training
+nodes: 1
+gpus: 1 # Pretend its 1, so that DDP does not try to init processes, actually use all 8 in DP
+nr: 0 # machine nr. in node (0 -- nodes - 1)
+dataparallel: True # Use DataParallel instead of DistributedDataParallel
+num_workers: 8
+prefetch_factor: 2
+dataset_dir: "./datasets" # Directory where downloaded demo stuff goes
+
+# train options
+seed: 42 # sacred handles automatic seeding when passed in the config
+batch_size: 4096
+image_size: 256 # SimCLR transforms data to end up with H and W set to image_size
+start_epoch: 50
+epochs: 100
+pretrain: True 
+
+# dataset options
+dataset: "Custom_2D" # CIFAR10, STL10, Custom_2D
+dataset_base_dir: "/Projects/Data_Dump/medical_2D/train_wo6" # Directory where real data lives
+random_subset: 1 # size of random subset, as a fraction of the original size
+opmode: "live_cache"
+grayscale: False # Make grayscale
+data_format: ".npy"
+normalizer: "naive" # naive, 01_clipped_CT, imagenet, windowed
+#normalizer_window: [null, null, 0, 1]
+shape_desired: [256, 256] # The dataset outputs data of this scale. If None, outputs whatever shape the raw data has
+tf_device: "gpu"
+loss_device: "gpu"
+
+# model options
+resnet: "resnet50"
+projection_dim: 256 # "[...] to project the representation to an n-dimensional latent space"
+
+# loss options
+optimizer: "LARS" # Adam, AdamW, LARS (experimental)
+stepwise_scheduler: "None" # DecayingCosine, CosineAnnealing, Exponential, None
+# annealing_time: 0.2 (how long one annealing step takes, as a fraction of epochs)
+# decay_per_epoch: 0.5 (by what factor the lr has shrunk after one epoch)
+lr: 3.0e-4 # learning rate (The LARS lr is hardcoded to the square root rule from the SimCLR paper. Any adaptive optimizer only uses lr as base lr.)
+weight_decay: 1.0e-6 # "optimized using LARS [...] and weight decay of 10−6"
+temperature: 0.5 # see appendix B.7.: Optimal temperature under different batch sizes
+
+# logging and checkpointing options
+name: "IxR"
+log_losses: True # log losses
+low_verbosity: False
+enc_save_frequency: 10 # number of epochs between model checkpoints
+
+# reload options
+model_path: "/Projects/DATL/logs_and_checkpoints/pretraining/IxR/" # set to the directory containing `checkpoint_##.tar` 
+epoch_num: 50 # set to checkpoint number
+reload: True

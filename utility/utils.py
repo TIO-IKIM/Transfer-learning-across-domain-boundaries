@@ -48,19 +48,25 @@ def getFileList(path: str, fileType: str = '.png', layer: int = 0, pbar: bool = 
     
     fileList - A list of all paths/to/files
     """
+
+    if isinstance(fileType, list):
+        fileList = []
+        for ft in fileType:
+            fileList += getFileList(path = path, fileType = ft, layer = 0, pbar = pbar)
+        return sorted(fileList)
     
     fileList = []
-    if os.path.isfile(path) and path.lower().endswith(fileType):
+    if os.path.isfile(path) and path.lower().endswith(fileType.lower()):
         return [path]
     elif os.path.isdir(path):
         if layer == 0:
-            for d in tqdm_wrapper(sorted(os.listdir(path)), w=pbar):
+            for d in tqdm_wrapper(sorted(os.listdir(path)), w = pbar):
                 new_path = os.path.join(path, d)
-                fileList += getFileList(new_path, fileType, layer=layer+1)
+                fileList += getFileList(new_path, fileType, layer = layer+1)
         else:
             for d in sorted(os.listdir(path)):
                 new_path = os.path.join(path, d)
-                fileList += getFileList(new_path, fileType, layer=layer+1)
+                fileList += getFileList(new_path, fileType, layer = layer+1)
     else:
         # Should never be called
         return []
@@ -656,7 +662,10 @@ class Custom_Dataset(torch.utils.data.Dataset):
         self.shape_desired = self.kwargs.get("shape_desired", None)
 
         # Filetype of images
-        self.df = self.kwargs.get("data_format", ".npy").lower()
+        if isinstance(self.kwargs.get("data_format", ".npy"), list):
+            self.df = [ft for ft in self.kwargs.get("data_format", ".npy")]
+        else:
+            self.df = self.kwargs.get("data_format", ".npy").lower()
 
         # Randomizer seed
         torch.manual_seed(kwargs.get("seed", 42))
@@ -1082,25 +1091,31 @@ class Custom_Dataset(torch.utils.data.Dataset):
         # Find file
         if File is None:
             File = self.FileList[oidx]
+        filetype = "."+File.split(".")[-1].lower()
 
         # Safety check
         allowed = [".npy", ".npz", ".pth", ".jpeg", ".jpg", ".png", ".nii", ".nii.gz"]
-        if self.df not in allowed:
-            raise NotImplementedError(f"_load does not support data type '{self.df}'.")
+        if isinstance(self.df, list):
+            for ft in self.df:
+                if not ft.lower() in allowed:
+                    raise NotImplementedError(f"_load does not support data type '{self.df}'.")
+        else:
+            if not self.df.lower() in allowed:
+                raise NotImplementedError(f"_load does not support data type '{self.df}'.")
 
         # Read the image
-        if self.df == ".npy":
+        if filetype == ".npy":
             array = np.load(File)
             target = self._get_target(oidx, File)
             tensor = torch.tensor(array, dtype = (torch.float16 if self.cache_precision == 16 else torch.float32))
-        elif self.df == ".npz":
+        elif filetype == ".npz":
             with np.load(File) as loaded:
                 array = loaded["image_array"]
                 target = loaded["class_array"][0]
                 tensor = torch.tensor(array, dtype=(torch.float16 if self.cache_precision == 16 else torch.float32))
-        elif self.df == ".pth":
+        elif filetype == ".pth":
             tensor, target = torch.load(File)
-        elif self.df in [".jpeg", ".jpg", ".png"]:
+        elif filetype in [".jpeg", ".jpg", ".png"]:
             with PIL.Image.open(File) as f:
                 if self.grayscale_only is True:
                     # Convert from any channel number to grayscale - sometimes necessary to spot 4-channel images
@@ -1108,10 +1123,12 @@ class Custom_Dataset(torch.utils.data.Dataset):
                 array = np.array(f)
             target = self._get_target(oidx, File)
             tensor = torch.tensor(array, dtype = (torch.float16 if self.cache_precision == 16 else torch.float32))
-        elif self.df in [".nii", ".nii.gz"]:
+        elif filetype in [".nii", ".nii.gz"]:
             array = nb.load(File).get_fdata()
             target = self._get_target(oidx, File)
             tensor = torch.tensor(array, dtype = (torch.float16 if self.cache_precision == 16 else torch.float32))
+        else:
+            raise NotImplementedError(f"_load is not implemented for data of filetype {filetype}.")
 
         # Return everything
         return tensor, oidx, target
@@ -1418,7 +1435,10 @@ class Custom_Dataset(torch.utils.data.Dataset):
         # Apply transforms, replace item if transforms throw error. Perform transforms on gpu is desired.
         try:
             if self.tf_device == "cpu":
-                tensor, target = self.apply_gpu_transforms(tensor, target = (target if self.num_masks != 0 else None))
+                if self.num_masks != 0:
+                    tensor, target = self.apply_gpu_transforms(tensor, target = target)
+                else:
+                    tensor, _ = self.apply_gpu_transforms(tensor)
             else:
                 pass # User must manually apply transforms before or in model forward pass
         except KeyboardInterrupt:

@@ -1,0 +1,58 @@
+# distributed training
+nodes: 1
+gpus: 1 # Pretend its 1, so that DDP does not try to init processes, actually use all 8 in DP
+nr: 0 # machine nr. in node (0 -- nodes - 1)
+dataparallel: True # Use DataParallel instead of DistributedDataParallel
+num_workers: 8
+prefetch_factor: 2
+dataset_dir: "./datasets" # Directory where downloaded demo stuff goes
+
+# train options
+seed: 42 # sacred handles automatic seeding when passed in the config
+batch_size: 2048
+image_size: 224 # for transformers
+start_epoch: 0
+epochs: 100
+pretrain: True 
+
+# dataset options
+dataset: "Custom_2D" # CIFAR10, STL10, Custom_2D
+#dataset_base_dir: "/Projects/Data_Dump/imagenet-1k/ILSVRC/Data/CLS-LOC/train" # Directory where real data lives
+dataset_base_dir: "/Projects/Data_Dump/medical_2D/train_wo6"
+random_subset: 1 # size of random subset, as a fraction of the original size
+opmode: "live_cache"
+grayscale: False # Make grayscale
+data_format: ".npy"
+normalizer: naive # naive, 01_clipped_CT, imagenet, windowed
+#normalizer_window: [null, null, 0, 1]
+shape_desired: [224, 224] # The dataset outputs data of this scale. If None, outputs whatever shape the raw data has
+tf_device: "gpu"
+loss_device: "gpu"
+
+# model options
+encoder_network: "vit_convnext"
+projection_dim: 256 # "[...] to project the representation to an n-dimensional latent space"
+
+# loss options
+optimizer: "LARS" # Adam, AdamW, LARS (experimental)
+#stepwise_scheduler: "DecayingCosine" # DecayingCosine, CosineAnnealing, Exponential, None
+#annealing_time: 0.2 (how long one annealing step takes, as a fraction of epochs)
+#decay_per_epoch: 0.5 (by what factor the lr has shrunk after one epoch)
+lr: 3.4 # learning rate (The LARS lr is hardcoded to the square root rule from the SimCLR paper. Any adaptive optimizer only uses lr as base lr.)
+weight_decay: 1.0e-6 # "optimized using LARS [...] and weight decay of 10−6"
+temperature: 0.5 # see appendix B.7.: Optimal temperature under different batch sizes
+
+# logging and checkpointing options
+name: "convnext_ct100_512"
+log_losses: True # log losses
+low_verbosity: False
+enc_save_frequency: 10 # number of epochs between model checkpoints
+
+# reload options
+# reload_path: "save" # set to the directory containing `checkpoint_##.tar` 
+checkpoint_epoch: 0 # set to checkpoint number
+reload: False
+
+# logistic regression options
+logistic_batch_size: 256
+logistic_epochs: 500

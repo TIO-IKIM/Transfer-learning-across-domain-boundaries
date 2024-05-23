@@ -29,7 +29,12 @@ class SimCLR(nn.Module):
             self.add_module("ntxent", self.ntxent)
 
         # Replace the fc layer with an Identity function
-        self.encoder.fc = Identity()
+        if "resnet" in args.encoder_network:
+            self.encoder.fc = Identity()
+        elif "vit" in args.encoder_network:
+            self.encoder.heads = Identity()
+        else:
+            raise NotImplementedError
 
         # We use a MLP with one hidden layer to obtain z_i = g(h_i) = W(2)σ(W(1)h_i) where σ is a ReLU non-linearity.
         self.projector = nn.Sequential(
@@ -54,13 +59,30 @@ class SimCLR(nn.Module):
             (x_i, x_j), _ = tf(x.to(device))
             del(x)
 
+        #print("x_i:", torch.any(torch.isnan(x_i) + torch.isinf(x_i)))
+        #print("x_j:", torch.any(torch.isnan(x_j) + torch.isinf(x_j)))
+
         h_i = self.encoder(x_i)
         h_j = self.encoder(x_j)
+
+        #if (torch.any(torch.isnan(h_i) + torch.isinf(h_i)) or 
+        #    torch.any(torch.isnan(h_j) + torch.isinf(h_j)) == True):
+        #    for name, param in self.encoder.named_parameters():
+        #        if torch.any(torch.isnan(param) + torch.isinf(param)) == True:
+        #            print(f"{name} has nan/inf in param.")
+        #        else:
+        #            print(f"{name} is clear.")
+        #print("h_i:", torch.any(torch.isnan(h_i) + torch.isinf(h_i)))
+        #print("h_j:", torch.any(torch.isnan(h_j) + torch.isinf(h_j)))
 
         z_i = self.projector(h_i)
         z_j = self.projector(h_j)
 
+        #print("z_i:", torch.any(torch.isnan(z_i) + torch.isinf(z_i)))
+        #print("z_j:", torch.any(torch.isnan(z_j) + torch.isinf(z_j)))
+
         if self.loss_device == "gpu":
+            #print(z_i.size(), z_j.size())
             loss = self.loss_calc(z_i, z_j)
             return loss
         elif self.loss_device == "cpu":

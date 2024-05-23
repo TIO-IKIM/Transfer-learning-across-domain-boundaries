@@ -12,17 +12,16 @@ seed: 42 # sacred handles automatic seeding when passed in the config
 batch_size: 4096
 image_size: 256 # SimCLR transforms data to end up with H and W set to image_size
 start_epoch: 0
-epochs: 100
+epochs: 50
 pretrain: True 
 
 # dataset options
 dataset: "Custom_2D" # CIFAR10, STL10, Custom_2D
-#dataset_base_dir: "/Projects/Data_Dump/imagenet-1k/ILSVRC/Data/CLS-LOC/train" # Directory where real data lives
-dataset_base_dir: "/Projects/Data_Dump/medical_2D/train_wo6"
+dataset_base_dir: "/Projects/Data_Dump/medical_2D/mixed" # Directory where real data lives
 random_subset: 1 # size of random subset, as a fraction of the original size
-opmode: "live_cache"
+opmode: "disk"
 grayscale: False # Make grayscale
-data_format: ".npy"
+data_format: [".npy", ".JPEG"]
 normalizer: "naive" # naive, 01_clipped_CT, imagenet, windowed
 #normalizer_window: [null, null, 0, 1]
 shape_desired: [256, 256] # The dataset outputs data of this scale. If None, outputs whatever shape the raw data has
@@ -43,16 +42,7 @@ weight_decay: 1.0e-6 # "optimized using LARS [...] and weight decay of 10−6"
 temperature: 0.5 # see appendix B.7.: Optimal temperature under different batch sizes
 
 # logging and checkpointing options
-name: "IxR"
+name: "IxR_mixed"
 log_losses: True # log losses
 low_verbosity: False
 enc_save_frequency: 5 # number of epochs between model checkpoints
-
-# reload options
-reload_path: /Projects/DATL/logs_and_checkpoints/pretraining/sancheck_1k100/encoder_50.tar # set to the directory containing `checkpoint_##.tar` 
-checkpoint_epoch: 50 # set to checkpoint number
-reload: True
-
-# logistic regression options
-logistic_batch_size: 256
-logistic_epochs: 500

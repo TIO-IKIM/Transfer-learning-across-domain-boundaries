@@ -1,0 +1,33 @@
+# Hidden stuff
+./.git/
+./.vscode/
+
+# WIP, config, dataset or binary files
+**/*.ipynb
+**/*.tar
+**/*.tar.gz
+**/*.pyc
+**/*.csv
+datasets/*
+unsorted/*
+pyrightconfig.json
+
+# Exceptions 
+!Jobs.csv
+!paper_eval/paper_eval_losscurves.ipynb
+!paper_eval/paper_eval_results.ipynb
+!pkgs/CKA/paper_eval_featsim.ipynb
+!unsorted/DatasetComplexityLB.py
+!unsorted/DatasetComplexityUB.py
+
+# Deleted/Unfinished experiments, test runs and crashlogs
+logs_and_checkpoints_conflicted/
+logs_and_checkpoints/pretraining/testrange/
+logs_and_checkpoints/seafile-ignore.txt
+pkgs/MAE/
+**/E5/**
+**/E7/**
+**/crash.log
+**/tr/**
+**/tr2/**
+**/old/**

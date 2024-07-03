@@ -46,3 +46,8 @@ name: "IxR_mixed"
 log_losses: True # log losses
 low_verbosity: False
 enc_save_frequency: 5 # number of epochs between model checkpoints
+
+# reload options
+model_path: "" # set to the directory containing `checkpoint_##.tar` 
+epoch_num: 0 # set to checkpoint number
+reload: False

@@ -7,8 +7,6 @@ The aim of the [attached paper](https://www.sciencedirect.com/science/article/pi
 
 In theory, this package was used to pretrain ResNet-50s using SimCLR, and finetune either these ResNet-50s or their corresponding U-Nets. In practice, these constraints are entirely artificial, and any other network could be used instead. However, anything that is not a ResNet will require a little bit of fiddling because of the way the final layers in the networks are replaced. Additionally, the U-Net constructor is only equipped to handle ResNets and a couple other architectures at this time.
 
-At this time, it is not precisely clear where the pretrained/finetuned models should be stored. This, and a few other things on the ToDo-list, will be taken care of soon!
-
 # How do I use this?
 
 1) Firstly, you clone this repository to your machine. Any location is fine.
@@ -39,9 +37,9 @@ Maybe. If the time and resources are available, I may be able to do this, but I 
 
 # Additional notes
 
-This project was originally compiled on Ubuntu 20.04 LTS and with the requirements listed in the **requirements.txt** file. Any runs in the paper were performed on an NVIDIA DGX with 8 A100 (80GB VRAM) graphics cards. If the package does not perform tasks as you expect it to, check whether you have the environment, OS, and/or a reasonably powerful GPU setup, and if not, reduce the number of workers and/or batch size.
+This project was originally compiled on Ubuntu 20.04 LTS and with the requirements listed in the **requirements.txt** file. Any runs in the paper were performed on an NVIDIA DGX-2 with 8 A100 (80GB VRAM) graphics cards. If the package does not perform tasks as you expect it to, check whether you have the environment, OS, and/or a reasonably powerful GPU setup, and if not, reduce the number of workers and/or batch size.
 
-The project was compiled with a DataParallel instead of DistributedDataParallel PyTorch model, because only the one GPU machine (however, a very powerful one) was available for various reasons. However, moving to more nodes whould be straightforward.
+The project was compiled with a DataParallel instead of DistributedDataParallel PyTorch model, because only the one GPU machine (however, a very powerful one) was available for various reasons. However, moving to more nodes would be straightforward.
 
 In order to improve execution speed and reduce GPU VRAM use, the following steps have been taken, which you should be taking into account when modifying or extending the functionality of this package:
 1) Caching. The dataset gets fully cached using the live_cache option in the configs. This hands the datasets a pointer to a ProxyObject, behind which a multiprocessing Manager sits, who holds the data. Any datapoint that is loaded during the first epoch is also cached in the Manager. During later epochs, every datapoint is loaded from the Manager. Any deterministic transforms are cached as well. Internally, these are referred to as cpu_transforms. Non-deterministic transforms are internally referred to as gpu_transforms. You can disable this behaviour by specifying "pre_cache", which pre-caches the dataset using 0 workers, or "disk", which simply reads data from disk and performs no caching at all.
